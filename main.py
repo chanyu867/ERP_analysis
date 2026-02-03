@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def calc_mean_erp(trial_points, ecog_data, pre=200, post=1000):
+def calc_mean_erp(trial_points, ecog_data):
     # ---- load trial_points (handle header or no-header) ----
     trials = pd.read_csv(trial_points)
+    trials[['starting_point', 'peak_point', 'finger']] = trials[['starting_point', 'peak_point', 'finger']].astype(int)
     logger.info(f"[debug] - Trial points columns: {trials.columns.tolist()}") #['starting_point', 'peak_point', 'finger']
 
     # ---- load ecog ----
@@ -18,6 +19,8 @@ def calc_mean_erp(trial_points, ecog_data, pre=200, post=1000):
     logger.info(f"[debug] - each data shapes: {start_points.shape}, {finger_nums.shape}, {ecog.shape}") #(632,) (632,) (465840,)
 
     # ---- calculate mean ERP for each finger ----
+    pre=200
+    post=1000
     fingers_erp_mean = np.zeros((5, (pre + 1 + post)), dtype=float)
     for finger in range(1, 6): #process for each finger (1 to 5)
         finger_starts = start_points[finger_nums == finger]
